@@ -1,0 +1,53 @@
+package main
+
+import (
+        "encoding/base64"
+	//        "io/ioutil"
+        "encoding/json"
+        "log"
+	"fmt"
+        "github.com/hashicorp/vault/helper/dhutil"
+)
+
+const dhpath = "./keys"
+
+type PrivateKeyInfo struct {
+        Curve25519PrivateKey string `json:"curve25519_private_key"`
+}
+
+func main() {
+        pub, pri, err := dhutil.GeneratePublicPrivateKey()
+        if err != nil {
+                log.Fatal(err)
+        }
+
+        mPubKey, err := json.Marshal(&dhutil.PublicKeyInfo{
+                Curve25519PublicKey: pub,
+        })
+        if err != nil {
+                log.Fatal(err)
+        }
+
+        mPrivKey, err := json.Marshal(&PrivateKeyInfo{
+                Curve25519PrivateKey: base64.StdEncoding.EncodeToString(pri),
+        })
+        if err != nil {
+                log.Fatal(err)
+        }
+
+
+	fmt.Println(mPubKey)
+	fmt.Println(mPrivKey)
+
+	fmt.Println(pub)
+        fmt.Println(base64.StdEncoding.EncodeToString(pri))
+
+        /*if err := ioutil.WriteFile("dh-pub-key.json", mPubKey, 0644); err != nil {
+                log.Fatal(err)
+        }
+
+        if err := ioutil.WriteFile("dh-priv-key.json", mPrivKey, 0644); err != nil {
+                log.Fatal(err)
+        }*/
+
+}
